@@ -21,17 +21,46 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(update, 30000);
   }
 
-  // Booking form (demo submit handling — no backend wired up)
+  // Booking form — submits to Netlify Function, which emails the customer and dispatch
   const form = document.querySelector('#booking-form');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const success = document.querySelector('#booking-success');
-      if (success) {
-        success.classList.add('show');
-        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const error = document.querySelector('#booking-error');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      success?.classList.remove('show');
+      error?.classList.remove('show');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
       }
-      form.reset();
+
+      try {
+        const res = await fetch('/.netlify/functions/send-quote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Request failed');
+
+        const invoiceEl = document.querySelector('#booking-invoice');
+        if (invoiceEl) invoiceEl.textContent = result.invoiceNumber;
+        success?.classList.add('show');
+        success?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        form.reset();
+      } catch (err) {
+        error?.classList.add('show');
+        error?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send Quote Request';
+        }
+      }
     });
   }
 

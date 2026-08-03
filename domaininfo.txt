@@ -1,0 +1,35 @@
+Custom domain setup (not a forward/redirect) — zlinelimosine.net should serve
+the Netlify site directly, under its own name and SSL cert.
+
+Netlify site (current):
+https://agent-6a5021da1375973f71e6fac--zlinelimousine.netlify.app/
+
+Target domain:
+https://zlinelimosine.net/
+
+Steps:
+
+1. Netlify dashboard -> Site -> Domain management -> Add a domain
+   -> enter zlinelimosine.net
+
+2. DNS at Namecheap (Advanced DNS), pick one:
+
+   a) Keep DNS at Namecheap, add records:
+      - A record, host "@", value -> apex load-balancer IP Netlify shows
+        on the domain page (typically 75.2.60.5 - use the exact value
+        Netlify displays for this site)
+      - CNAME record, host "www", value -> the site's *.netlify.app
+        subdomain
+
+   b) Or delegate nameservers to Netlify DNS (Netlify shows 4 nameservers
+      after the domain is added) - Netlify then manages apex + www + SSL
+      automatically, but Namecheap DNS panel is no longer used.
+
+3. Wait for DNS propagation (minutes to hours). Netlify shows
+   "Verifying" until DNS resolves.
+
+4. SSL cert (Let's Encrypt) is auto-provisioned once DNS verifies -
+   no manual action needed.
+
+5. Set primary domain (zlinelimosine.net vs www.zlinelimosine.net) in
+   Netlify's domain management screen; the other auto-redirects to it.
