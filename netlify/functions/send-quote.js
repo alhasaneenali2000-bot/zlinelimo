@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
-const DISPATCH_EMAIL = 'dispatch@zlinelimosine.net';
-const FROM_EMAIL = process.env.QUOTE_FROM_EMAIL || 'Zline Dispatch <quotes@zlinelimosine.net>';
+const DISPATCH_EMAIL = 'dispatch@zlinelimousine.net';
+const FROM_EMAIL = process.env.QUOTE_FROM_EMAIL || 'Zline Dispatch <quotes@zlinelimousine.net>';
 
 const VEHICLE_CODES = {
   'Executive Sedan (seats 3)': 'SED',
